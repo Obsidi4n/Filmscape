@@ -1,0 +1,16 @@
+{% extends "admin/change_form.html" %}
+{% load i18n admin_urls admin_static admin_modify %}
+
+{% block field_sets %}
+    {% submit_row %}
+    {% for fieldset in adminform %}
+        {% for line in fieldset %}
+            {% for field in line %}
+                {% if field.field.name == 'jumbled_answer' %}
+                    <input type="button" style="float:right;" value="Shuffle" name="_shuffleAnswer" onclick="shuffleAnswer()" />
+                {% endif %}
+            {% endfor %}
+        {% endfor %}
+        {% include "admin/includes/fieldset.html" %}
+    {% endfor %}
+{% endblock %}
