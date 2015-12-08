@@ -63,7 +63,7 @@ class Question(models.Model):
     thumbnail.allow_tags = True
 
     def setDirectory(self, filename):
-         return 'Level{}/{}'.format(str(self.level.level), filename)
+         return 'Level{levelIndex}/{name}'.format(levelIndex=str(self.level.level),name=filename)
 
     level = models.ForeignKey(Level)
     image = models.ImageField("Image", upload_to=setDirectory, default='')
@@ -74,10 +74,15 @@ class Question(models.Model):
 
     def save(self, *args, **kwargs):
         if self.image:
-            name = self.image.name.split('.')[0]
-            print('Uploading ', dir(self.image), self.level)
-            self.image.upload_to = self.level
+            name = self.image.name
+            print('Modifying name '+name)
+            if '/' in name:
+                name = name[name.rindex('/')+1:]
+            if '.' in name:
+                name = name[:name.rindex('.')]
+
             self.answer = name.upper().replace('_', ' ').strip()
+            # self.image.upload_to = self.level
         super(Question, self).save(*args, **kwargs)
 
     def __unicode__(self):
