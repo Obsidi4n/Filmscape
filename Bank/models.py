@@ -63,25 +63,31 @@ class Question(models.Model):
     thumbnail.allow_tags = True
 
     def setDirectory(self, filename):
-         return 'Level{levelIndex}/{name}'.format(levelIndex=str(self.level.level),name=filename)
+        return 'Level{levelIndex}/{name}'.format(levelIndex=str(self.level.level),name=filename)
 
     level = models.ForeignKey(Level)
     image = models.ImageField("Image", upload_to=setDirectory, default='')
-    question_id = models.CharField(max_length=8, primary_key=True, default=uidgen, help_text="This is auto-generated")
+    question_id = models.CharField(max_length=8, primary_key=True, help_text="This is auto-generated")
     answer = models.CharField(max_length=20, blank=True)
     jumbled_answer = models.CharField(max_length=20, blank=True)
     enabled = models.BooleanField(default=True)
 
     def save(self, *args, **kwargs):
-        if self.image:
+        if not self.question_id:
+            self.question_id = self.uidgen()
+        if self.image and self.question_id not in self.image.name:
             name = self.image.name
             print('Modifying name '+name)
             if '/' in name:
                 name = name[name.rindex('/')+1:]
+            else:
+                'Level{levelIndex}/{name}'.format(levelIndex=str(self.level.level),name=name)
+
             if '.' in name:
                 name = name[:name.rindex('.')]
 
             self.answer = name.upper().replace('_', ' ').strip()
+            self.image.name = '{name}.jpg'.format(levelIndex=str(self.level.level),name=self.question_id )
             # self.image.upload_to = self.level
         super(Question, self).save(*args, **kwargs)
 

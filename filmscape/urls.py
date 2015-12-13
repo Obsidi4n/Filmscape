@@ -18,7 +18,10 @@ from django.conf.urls import url
 from django.contrib import admin
 from django.conf import settings
 from django.conf.urls.static import static
+from Bank import views
 
 urlpatterns = [
+    url(r'^$', views.index, name='index'),
     url(r'^admin/', admin.site.urls),
+    url(r'^images',  views.get_media)
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
